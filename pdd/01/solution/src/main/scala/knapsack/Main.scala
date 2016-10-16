@@ -1,6 +1,6 @@
 package knapsack
 
-import scala.collection.mutable
+import scala.collection.{ immutable, mutable }
 
 object Main extends App {
   /** Solves an instance of the knapsack problem by iterating over all possible item combinations.
@@ -71,7 +71,7 @@ object Main extends App {
   def solveInstanceNaiveRecursion(items: Array[(Int, Int)], capacity: Int): Configuration = {
     var best = Configuration.identity
 
-    def go(w: Int, v: Int, idx: Int, configIndices: mutable.BitSet): Unit = {
+    def go(w: Int, v: Int, idx: Int, configIndices: immutable.BitSet): Unit = {
       if (w > capacity) return
       if (v > best.value) best = Configuration(w, v, configIndices)
       if (idx == items.length) return
@@ -79,7 +79,7 @@ object Main extends App {
       go(w, v, idx + 1, configIndices)
     }
 
-    go(0, 0, 0, new mutable.BitSet)
+    go(0, 0, 0, immutable.BitSet.empty)
     best
   }
 
