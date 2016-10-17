@@ -70,16 +70,19 @@ object Main extends App {
 
   def solveInstanceNaiveRecursion(items: Array[(Int, Int)], capacity: Int): Configuration = {
     var best = Configuration.identity
+    val configIndices: mutable.BitSet = mutable.BitSet.empty
 
-    def go(w: Int, v: Int, idx: Int, configIndices: immutable.BitSet): Unit = {
+    def go(w: Int, v: Int, idx: Int): Unit = {
       if (w > capacity) return
-      if (v > best.value) best = Configuration(w, v, configIndices)
+      if (v > best.value) best = Configuration(w, v, new mutable.BitSet(configIndices.toBitMask))
       if (idx == items.length) return
-      go(w + items(idx)._1, v + items(idx)._2, idx + 1, configIndices + idx)
-      go(w, v, idx + 1, configIndices)
+      go(w, v, idx + 1)
+      configIndices.add(idx)
+      go(w + items(idx)._1, v + items(idx)._2, idx + 1)
+      configIndices.remove(idx)
     }
 
-    go(0, 0, 0, immutable.BitSet.empty)
+    go(0, 0, 0)
     best
   }
 
