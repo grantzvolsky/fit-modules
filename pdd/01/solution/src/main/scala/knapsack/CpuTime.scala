@@ -1,7 +1,12 @@
 package knapsack
 
-import java.lang.management.{ ManagementFactory, ThreadMXBean }
+import java.lang.management.{ManagementFactory, ThreadMXBean}
 
+import scala.concurrent.duration._
+
+/**
+  * Source: https://puzzle.ics.hut.fi/ICS-A1120/2015/notes/round-efficiency--measuring.html
+  */
 package object CpuTime {
   val bean: ThreadMXBean = ManagementFactory.getThreadMXBean
   def getCpuTime = if (bean.isCurrentThreadCpuTimeSupported) bean.getCurrentThreadCpuTime else 0
@@ -12,12 +17,12 @@ package object CpuTime {
     * - the return value of the function call and
     * - the time spent in executing the function.
     */
-  def measureCpuTime[T](f: => T): (T, Double) = {
+  def measureCpuTime[T](f: => T): (T, Duration) = {
     val start = getCpuTime
     val r = f
     val end = getCpuTime
-    val t = (end - start) / 1000000.0
-    (r, t)
+    val t = (end - start) / 1000.0
+    (r, Duration(t, MICROSECONDS))
   }
 
   /**
