@@ -1,5 +1,6 @@
 package knapsack
 
+import scala.annotation.tailrec
 import scala.collection.immutable
 
 object Main extends App {
@@ -9,10 +10,12 @@ object Main extends App {
     * Source: http://stackoverflow.com/questions/2315912/scala-best-way-to-parse-command-line-parameters-cli
     */
   def listToOptionMap(lst: List[String]): Map[Symbol, String] = {
+    @tailrec
     def nextOption(map : Map[Symbol, String], list: List[String]) : Map[Symbol, String] = {
       def isSwitch(s : String) = s(0) == '-'
       list match {
         case Nil => map
+        case "--mode" :: value :: tail => nextOption(map ++ Map('mode -> value), tail)
         case "--method" :: value :: tail => nextOption(map ++ Map('method -> value), tail)
         case "--itemCnt" :: value :: tail => nextOption(map ++ Map('itemCnt -> value), tail)
         case string :: opt2 :: tail if isSwitch(opt2) => nextOption(map ++ Map('infile -> string), list.tail)
@@ -33,6 +36,7 @@ object Main extends App {
       case "NaiveIteration" => NaiveIteration
       case "NaiveRecursionSansConfigVars" => NaiveRecursionSansConfigVars
       case "VWRatioHeuristic" => VWRatioHeuristic
+      case "DPByCapacity" => DPByCapacity
       case default => NaiveRecursion
     }
   }
@@ -52,25 +56,38 @@ object Main extends App {
   /**
     * Parse reference output and return an iterator of [[Solution]]
     */
-  def getReference(refLines: Iterator[String]): Iterator[Solution] = {
-    val solutionRegex = raw"^(\d+) (\d+) (\d+)(.*)".r
-    for {
-      solutionRegex(id, n, v, config) <- refLines
-    } yield Solution(id, n.toInt, Configuration(0, v.toInt, immutable.BitSet.empty))
+  def runBenchmark(options: Map[Symbol, String]) = {
+    def getReference(refLines: Iterator[String]): Iterator[Solution] = {
+      val solutionRegex = raw"^(\d+) (\d+) (\d+)(.*)".r
+      for {
+        solutionRegex(id, n, v, config) <- refLines
+      } yield Solution(id, n.toInt, Configuration(0, v.toInt, immutable.BitSet.empty))
+    }
+
+    def getRefFile(n: Int) = s"/var/my_root/repos/fit/paa/01/output/reference/knap_$n.sol.dat"
+    def getInFile(n: Int) = s"/var/my_root/repos/fit/paa/01/input/knap_$n.inst.dat"
+
+    def reference(n: Int): Iterator[Solution] =  getReference(scala.io.Source.fromFile(getRefFile(n)).getLines)
+    def input(n: Int): Iterator[String] = scala.io.Source.fromFile(getInFile(n)).getLines
+
+    val solver = getSolver(options('method))
+    val itemCnt = options('itemCnt).toInt
+    val in = input(itemCnt)
+    val ref = reference(itemCnt)
+    val res = Benchmark.runSingle(solver, in, ref, itemCnt)
+
+    println(res)
   }
 
-  def getRefFile(n: Int) = s"/var/my_root/repos/fit/pdd/01/output/reference/knap_$n.sol.dat"
-  def getInFile(n: Int) = s"/var/my_root/repos/fit/pdd/01/input/knap_$n.inst.dat"
-
-  def reference(n: Int): Iterator[Solution] =  getReference(scala.io.Source.fromFile(getRefFile(n)).getLines)
-  def input(n: Int): Iterator[String] = scala.io.Source.fromFile(getInFile(n)).getLines
+  def run(options: Map[Symbol, String]) = {
+    val solver = getSolver(options('method))
+    val instances = io.Source.stdin.getLines()
+    solve(solver, instances) foreach println
+  }
 
   val options = listToOptionMap(args.toList)
-  val solver = getSolver(options('method))
-  val itemCnt = options('itemCnt).toInt
-  val in = input(itemCnt)
-  val ref = reference(itemCnt)
-  val res = Benchmark.runSingle(solver, in, ref, itemCnt)
 
-  println(res)
+  if (options('mode) == "print") run(options)
+  else if (options('mode) == "benchmark") runBenchmark(options)
+  else println("Unknown mode.")
 }
