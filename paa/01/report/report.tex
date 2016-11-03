@@ -91,7 +91,7 @@ which is $\mathcal{O}(n\log{}n)$ in our case.
 Step 1: Sort the array of items by their value/weight ratio.
 Step 2: Try adding items in this order. If an item is too large to fit, skip it.
 \end{lstlisting}
-That's all. The heuristic is very straightforward and yields surprisingly accurate results, see figure \ref{vwratioaccuracy}.
+That's all. The heuristic is very straightforward and yields surprisingly accurate results, see figure \ref{vwratioavgerr}.
 
 \subsection{Naive Iteration}
 The knapsack can be seen as a vector of booleans, where each boolean signifies the presence of absence of a particular
@@ -154,14 +154,22 @@ computation time and n, where n is the total number of items. As expected, it ma
 \end{figure}
 }
 
-The following table shows how the solutions of the value/weight ratio heuristic compare to optimal solutions.
+The following table shows how the solutions of the value/weight ratio heuristic compared to optimal solutions.
 
 \begin{figure}[H]
     \begin{lstlisting}[basicstyle=\scriptsize]
-    n   4      10      15      20      22      25      30     35     40
-    err 1.94%  1.43%   .49%    .54%    .69%    .72%    .72%   .50%   .53%
+    n     4      10      15      20     22      25      30     35    40
+    avgE  1.94%  1.43%   .49%    .54%   .69%    .72%    .72%   .50%  .53%
     \end{lstlisting}
-    \caption{Accuracy of the V/W ratio heuristic.}\label{vwratioaccuracy}
+    \caption{Average error of the V/W ratio heuristic.}\label{vwratioavgerr}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{lstlisting}[basicstyle=\scriptsize]
+    n      4      10     15     20     22     25      30     35     40
+    maxE   24.7%  11.5%  8.54%  8.43%  7.23%  3.68%   5.51%  4.60%  2.34%
+    \end{lstlisting}
+    \caption{Maximal error of the V/W ratio heuristic.}\label{vwratiomaxerr}
 \end{figure}
 
 As we can see, the heuristic was fairly successful at finding near-optimal solutions and its precision increases with
