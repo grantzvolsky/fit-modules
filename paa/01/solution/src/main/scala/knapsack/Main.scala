@@ -1,5 +1,7 @@
 package knapsack
 
+import knapsack.solvers._
+
 import scala.annotation.tailrec
 import scala.collection.immutable
 
@@ -33,11 +35,14 @@ object Main extends App {
     */
   def getSolver(methodStr: String): KnapsackSolver = {
     methodStr match {
+      case "NaiveRecursion" => NaiveRecursion
       case "NaiveIteration" => NaiveIteration
       case "NaiveRecursionSansConfigVars" => NaiveRecursionSansConfigVars
       case "VWRatioHeuristic" => VWRatioHeuristic
       case "DPByCapacity" => DPByCapacity
-      case default => NaiveRecursion
+      case "DPByValue" => DPByValue
+      case "FPTAS" => FPTAS
+      //case default => NaiveRecursion
     }
   }
 

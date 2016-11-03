@@ -1,4 +1,6 @@
-package knapsack
+package knapsack.solvers
+
+import knapsack.Configuration
 
 import scala.collection.mutable
 
