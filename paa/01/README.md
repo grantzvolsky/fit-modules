@@ -18,4 +18,4 @@ scala knapsack.jar [-Dmode="<mode>"] [-Dmethod="<method>"] [-DitemCnt="<n>"]
 Examples:
 cat ../input/knap_4.inst.dat | scala target/scala-2.11/knapsack_2.11-0.1-SNAPSHOT.jar -Dmethod="DPByCapacity" -Dmode="print"
 
-scala target/scala-2.11/knapsack_2.11-0.1-SNAPSHOT.jar -Dmode="benchmark" -Dmethod="NaiveRecursion" -DitemCnt="20"
+scala target/scala-2.11/knapsack_2.11-0.1-SNAPSHOT.jar -Dmode="benchmark" -Dmethod="NaiveRecursion" -DitemCnt="20" -Depsilon="0.1"
