@@ -1,43 +1,25 @@
 package knapsack
 
+import knapsack.solvers._
+
 import scala.annotation.tailrec
 import scala.collection.immutable
 
 object Main extends App {
 
   /**
-    * Transform an argument list into a map of options.
-    * Source: http://stackoverflow.com/questions/2315912/scala-best-way-to-parse-command-line-parameters-cli
-    */
-  def listToOptionMap(lst: List[String]): Map[Symbol, String] = {
-    @tailrec
-    def nextOption(map : Map[Symbol, String], list: List[String]) : Map[Symbol, String] = {
-      def isSwitch(s : String) = s(0) == '-'
-      list match {
-        case Nil => map
-        case "--mode" :: value :: tail => nextOption(map ++ Map('mode -> value), tail)
-        case "--method" :: value :: tail => nextOption(map ++ Map('method -> value), tail)
-        case "--itemCnt" :: value :: tail => nextOption(map ++ Map('itemCnt -> value), tail)
-        case string :: opt2 :: tail if isSwitch(opt2) => nextOption(map ++ Map('infile -> string), list.tail)
-        case string :: Nil =>  nextOption(map ++ Map('infile -> string), list.tail)
-        case option :: tail => println("Unknown option "+option)
-          sys.exit(1)
-      }
-    }
-
-    nextOption(Map(), lst)
-  }
-
-  /**
     * Select algorithm.
     */
-  def getSolver(methodStr: String): KnapsackSolver = {
-    methodStr match {
+  def solver: KnapsackSolver = {
+    System.getProperty("method") match {
+      case "NaiveRecursion" => NaiveRecursion
       case "NaiveIteration" => NaiveIteration
       case "NaiveRecursionSansConfigVars" => NaiveRecursionSansConfigVars
       case "VWRatioHeuristic" => VWRatioHeuristic
       case "DPByCapacity" => DPByCapacity
-      case default => NaiveRecursion
+      case "DPByValue" => DPByValue
+      case "FPTAS" => FPTAS
+      //case default => NaiveRecursion
     }
   }
 
@@ -56,7 +38,7 @@ object Main extends App {
   /**
     * Parse reference output and return an iterator of [[Solution]]
     */
-  def runBenchmark(options: Map[Symbol, String]) = {
+  def runBenchmark() = {
     def getReference(refLines: Iterator[String]): Iterator[Solution] = {
       val solutionRegex = raw"^(\d+) (\d+) (\d+)(.*)".r
       for {
@@ -70,8 +52,7 @@ object Main extends App {
     def reference(n: Int): Iterator[Solution] =  getReference(scala.io.Source.fromFile(getRefFile(n)).getLines)
     def input(n: Int): Iterator[String] = scala.io.Source.fromFile(getInFile(n)).getLines
 
-    val solver = getSolver(options('method))
-    val itemCnt = options('itemCnt).toInt
+    val itemCnt = System.getProperty("itemCnt").toInt
     val in = input(itemCnt)
     val ref = reference(itemCnt)
     val res = Benchmark.runSingle(solver, in, ref, itemCnt)
@@ -79,15 +60,12 @@ object Main extends App {
     println(res)
   }
 
-  def run(options: Map[Symbol, String]) = {
-    val solver = getSolver(options('method))
+  def run() = {
     val instances = io.Source.stdin.getLines()
     solve(solver, instances) foreach println
   }
 
-  val options = listToOptionMap(args.toList)
-
-  if (options('mode) == "print") run(options)
-  else if (options('mode) == "benchmark") runBenchmark(options)
+  if (System.getProperty("mode") == "print") run()
+  else if (System.getProperty("mode") == "benchmark") runBenchmark()
   else println("Unknown mode.")
 }

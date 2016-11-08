@@ -1,10 +1,12 @@
 package knapsack
 
+import knapsack.solvers.KnapsackSolver
+
 import scala.concurrent.duration.Duration
 
 object Benchmark {
-  case class BenchResult(method: String, n: Int, time: Duration, avgRelErr: Double) {
-    override def toString = method + " " + n + " " + time.toMicros + " " + avgRelErr
+  case class BenchResult(method: String, n: Int, time: Duration, avgRelErr: Double, maxRelErr: Double) {
+    override def toString = method + " " + n + " " + time.toMicros + " " + avgRelErr + " " + maxRelErr
   }
   def runSingle(solver: KnapsackSolver, in: Iterator[String], ref: Iterator[Solution], itemCnt: Int): BenchResult = {
     val refValues = ref map (s => s.bestConfig.value) toList
@@ -16,9 +18,10 @@ object Benchmark {
     val outValues = res._1
     val relErrors = (refValues, outValues).zipped.map((ref, out) => (ref - out).toDouble / ref)
     val avgRelErr = relErrors.sum / relErrors.size
+    val maxRelErr = relErrors.max
     val avgTime = res._2 / outValues.size
 
-    BenchResult(solver.toString, itemCnt, avgTime, avgRelErr)
+    BenchResult(solver.toString, itemCnt, avgTime, avgRelErr, maxRelErr)
   }
 
   def runAll(solver: KnapsackSolver, testScope: List[Int], in: Iterator[String], ref: Iterator[Solution], itemCnt: Int): List[BenchResult] = {

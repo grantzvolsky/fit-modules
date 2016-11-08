@@ -154,7 +154,12 @@ computation time and n, where n is the total number of items. As expected, it ma
 \end{figure}
 }
 
-The following table shows how the solutions of the value/weight ratio heuristic compared to optimal solutions.
+The following tables show the average and maximum relative errors of the VWRatioHeuristic algorithm. The
+following formula was used to calculate the relative error of a signle solution: \\
+
+$\varepsilon = \frac{V(OPT)-V(APX)}{V(OPT)}$ \\
+
+Where $V(OPT)$ is the value of the optimal solution and $V(APX)$ is the value of the optimal solution.
 
 \begin{figure}[H]
     \begin{lstlisting}[basicstyle=\scriptsize]
