@@ -16,6 +16,7 @@ object Main extends App {
       case "NaiveIteration" => NaiveIteration
       case "NaiveRecursionSansConfigVars" => NaiveRecursionSansConfigVars
       case "VWRatioHeuristic" => VWRatioHeuristic
+      case "BranchAndBound" => BranchAndBound
       case "DPByCapacity" => DPByCapacity
       case "DPByValue" => DPByValue
       case "FPTAS" => FPTAS
@@ -55,7 +56,7 @@ object Main extends App {
     val itemCnt = System.getProperty("itemCnt").toInt
     val in = input(itemCnt)
     val ref = reference(itemCnt)
-    val res = Benchmark.runSingle(solver, in, ref, itemCnt)
+    val res = Benchmark.runSingle(solver, in, ref, itemCnt, System.getProperty("epsilon").toDouble)
 
     println(res)
   }
