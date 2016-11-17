@@ -34,7 +34,8 @@ object DPByValue extends KnapsackSolver {
       else getBestValue(value - 1)
     }
 
-    Configuration(solutions(getBestValue(totalValue))(items.length - 1), getBestValue(totalValue), immutable.BitSet.empty)
+    val bestValue = getBestValue(totalValue)
+    Configuration(solutions(bestValue)(items.length - 1), bestValue, immutable.BitSet.empty)
   }
 
   override def toString = "DPByValue"
