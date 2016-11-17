@@ -1,5 +1,6 @@
 package knapsack
 
+import knapsack.solvers.NaiveRecursion
 import org.scalatest._
 
 class KnapsackSpec extends FlatSpec {

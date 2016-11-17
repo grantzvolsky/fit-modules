@@ -1,4 +1,6 @@
-package knapsack
+package knapsack.solvers
+
+import knapsack.Configuration
 
 import scala.annotation.tailrec
 import scala.collection.immutable

@@ -1,4 +1,6 @@
-package knapsack
+package knapsack.solvers
+
+import knapsack.Configuration
 
 import scala.collection.mutable
 
@@ -36,7 +38,7 @@ object NaiveIteration extends KnapsackSolver {
     var best = Configuration.identity
     (0 until 1 << items.length) foreach { configNo =>
       val configIndices = scala.collection.mutable.BitSet.fromBitMask(Array(configNo)) // BitSet representation of an integer.
-    val config = evalIndices(configIndices)
+      val config = evalIndices(configIndices)
       if (config.weight <= capacity && config.value > best.value) best = config
     }
 
