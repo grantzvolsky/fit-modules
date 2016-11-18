@@ -5,9 +5,17 @@ import scala.collection.immutable
 case class AminoAcid(name: String,
                      code: Char,
                      mono: Double, // monoisotopic mass
-                     avg: Double) // isotopic average mass
+                     avg: Double /* isotopic average mass*/ )
 
 case object AminoAcid {
+  def fromString(str: String): Option[AminoAcid] = {
+    val inRegex = raw"(.*) (.*) (.*) (.*)".r
+    str match {
+      case inRegex(name, c, m, a) => Some(AminoAcid(name, c.charAt(0), m.toDouble, a.toDouble))
+      case default => None
+    }
+  }
+
   val in =
     """|Gly G 57.021464 57.05
       |Ala A 71.037114 71.08
@@ -33,11 +41,9 @@ case object AminoAcid {
   val inRegex = raw"(.*) (.*) (.*) (.*)".r
 
   val acids: immutable.Map[Char, AminoAcid] = {for {
-    inRegex(name, c, m, a) <- in.split('\n')
-    code = c.charAt(0)
-  } yield {
-    (code, AminoAcid(name, code, m.toDouble, a.toDouble))
-  }}.toMap
+    line <- in.split('\n')
+    acid = fromString(line).get
+  } yield (acid.code, acid)}.toMap
 
   def get(code: Char) = acids.get(code)
 }

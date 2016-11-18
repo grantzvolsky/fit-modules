@@ -2,10 +2,10 @@ package peptidentifier
 
 import scala.collection.mutable
 
-case class Spectrogram(peptide: List[AminoAcid],
-                       pepmass: Double,
-                       charge: String,
-                       title: String,
+case class Spectrogram(peptide: Option[Peptide],
+                       pepmass: Option[Double],
+                       charge: Option[String],
+                       title: Option[String],
                        peaks: List[(Double, Int)])
 
 case object Spectrogram {
@@ -15,7 +15,7 @@ case object Spectrogram {
   def fromMgf(it: Iterator[String]): List[Spectrogram] = {
     var sgrams: List[Spectrogram] = Nil
 
-    while (it.hasNext) {
+    def readRawSpectrogram(it: Iterator[String]) = {
       val sgLines: mutable.Queue[String] = mutable.Queue.empty
 
       var line: String = it.next()
@@ -28,23 +28,29 @@ case object Spectrogram {
         line = it.next()
       }
 
-      var peptide: List[AminoAcid] = Nil
-      var pepmass: Double = 0
-      var charge: String = ""
-      var title: String = ""
+      sgLines
+    }
+
+    while (it.hasNext) {
+      val sgLines = readRawSpectrogram(it)
+
+      var peptideOpt: Option[Peptide] = None
+      var pepmass: Option[Double] = None
+      var charge: Option[String] = None
+      var title: Option[String] = None
       var peaks: List[(Double, Int)] = Nil
 
       sgLines foreach {
         case varPattern(lhs, rhs) => lhs match {
-          case "PEPTIDE" => peptide = rhs.getBytes.flatMap(code => AminoAcid.get(code.toChar)) toList
-          case "PEPMASS" => pepmass = rhs.toDouble
-          case "CHARGE" => charge = rhs
-          case "TITLE" => title = rhs
+          case "PEPTIDE" => peptideOpt = Some(Peptide.fromString(rhs))
+          case "PEPMASS" => pepmass = Some(rhs.toDouble)
+          case "CHARGE" => charge = Some(rhs)
+          case "TITLE" => title = Some(rhs)
         }
         case peakPattern(mz, intensity) => peaks = (mz.toDouble, intensity.toInt) :: peaks
       }
 
-      if (sgLines.nonEmpty) sgrams = Spectrogram(peptide, pepmass, charge, title, peaks) :: sgrams
+      if (sgLines.nonEmpty) sgrams = Spectrogram(peptideOpt, pepmass, charge, title, peaks) :: sgrams
     }
     sgrams
   }
