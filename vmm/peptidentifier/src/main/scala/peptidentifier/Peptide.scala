@@ -1,23 +1,26 @@
 package peptidentifier
 
-import scala.collection.mutable
-
 case class Peptide(acids: List[AminoAcid]) {
+  def peptideToSpectrum(acids: List[AminoAcid], acc: Double): List[Double] = {
+    acids match {
+      case Nil => Nil
+      case acid :: tail => acc + acid.mono :: peptideToSpectrum(tail, acc + acid.mono)
+      case acid :: Nil => acc + acid.mono :: Nil
+    }
+  }
+
+  def bSpectrum(): List[Double] = peptideToSpectrum(this.acids, 1.00794) // TODO: Jak by se tyto konstanty mely jmenovat?
+  def ySpectrum(): List[Double] = peptideToSpectrum(this.acids.reverse, 19.02322) // TODO: Proc se y ionty pocitaji odzadu? To je konvence?
+
   override def toString = {
     val sb = new StringBuilder
     sb.append("seq\tB\tY\n")
 
-    val yMass: mutable.Queue[Double] = mutable.Queue.empty
-    var yMassAcc = 19.02322
-    ((acids.length - 1) to 0 by -1) foreach { idx =>
-      yMassAcc += acids(idx).mono
-      yMass.enqueue(yMassAcc)
-    }
+    val bPeaks = bSpectrum()
+    val yPeaks = ySpectrum()
 
-    var bMassAcc = 1.00794
-    acids foreach { a =>
-      bMassAcc += a.mono
-      sb.append(f"${a.code}\t$bMassAcc%.2f\t${yMass.dequeue()}%.2f\n")
+    acids.indices foreach { i =>
+      sb.append(f"${acids(i).code}\t${bPeaks(i)}%.2f\t${yPeaks(i)}%.2f\n")
     }
 
     sb.toString
