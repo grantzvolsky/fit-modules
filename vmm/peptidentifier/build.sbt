@@ -28,3 +28,4 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-mllib" % sparkVersion,
   "org.apache.spark" % "spark-sql_2.11" % sparkVersion
 )
+

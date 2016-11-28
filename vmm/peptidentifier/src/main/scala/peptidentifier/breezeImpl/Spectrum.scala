@@ -1,4 +1,6 @@
-package peptidentifier
+package peptidentifier.breezeImpl
+
+import peptidentifier._
 
 import breeze.linalg.{SparseVector => SBV}
 
@@ -18,7 +20,7 @@ case object Spectrum {
     res
   }
 
-  def normalize(s: Spectrum): NormalizedSpectrum = {
+  def normalize(s: Spectrum): SBV[Double] = {
     val res = discretize(s.peaks, 1, 100000)
 
     val maxIntensity: Double = res.reduceLeft(_ max _)
@@ -26,7 +28,7 @@ case object Spectrum {
       res.activeKeysIterator foreach (idx => res(idx) = res(idx) / maxIntensity)
     }
 
-    NormalizedSpectrum(res.activeIterator.toMap)
+    res
   }
 
   def cosim(l: NormalizedSpectrum, r: NormalizedSpectrum): Double = {
@@ -40,4 +42,13 @@ case object Spectrum {
     euclDot(l.peaks.values, r.peaks.values) / (euclNorm(l.peaks.values) * euclNorm(r.peaks.values))
   }
 
+  def cosim(l: SBV[Double], r: SBV[Double]): Double = {
+    def euclNorm(v: SBV[Double]): Double = Math.sqrt(v.values.iterator.reduceLeft((acc, v) => acc + Math.pow(v, 2)))
+    def euclDot(l: SBV[Double], r: SBV[Double]): Double = {
+      val idxEnd = Math.min(l.length, r.length)
+      (0 until idxEnd).foldLeft(0.0)((acc, idx) => acc + (l(idx) * r(idx)))
+    }
+
+    euclDot(l, r) / (euclNorm(l) * euclNorm(r))
+  }
 }
