@@ -1,11 +1,6 @@
 package peptidentifier
 
-import breeze.linalg.{max, SparseVector => SBV}
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.linalg.distributed.RowMatrix
-import org.apache.spark.rdd.RDD
-
-import scala.collection.mutable.ListBuffer
+import breeze.linalg.{SparseVector => SBV}
 
 
 object Main extends App {
@@ -14,8 +9,6 @@ object Main extends App {
   val mgfLines = scala.io.Source.fromFile("/var/my_root/repos/fit/vmm/input/spectra/amethyst_annotated.mgf").getLines
 
   val sgrams = Spectrogram.fromMgf(mgfLines)
-
-  import org.apache.spark.mllib.linalg.{Vector, Vectors}
 
 
   // TODO: Nebylo by lepsi stanovit nejakou deltu, ktera urci zda jsou vrcholy totozne?
@@ -73,11 +66,11 @@ object Main extends App {
 
   println("pigeonholed spectrum: ")
   val s0ref = pigeonhole(sgrams(0).peptide.get.ySpectrum().reverse zip (0 to sgrams.head.peptide.get.acids.length).map(_ => 1), 0.1)
-  val s0 = Spectrum.clearNoise(sgrams(0).spectrum) // pigeonhole(sgrams(0).spectrum.peaks, 0.1)
+  val s0 = Spectrum.normalize(sgrams(0).spectrum) // pigeonhole(sgrams(0).spectrum.peaks, 0.1)
   val s1ref = pigeonhole(sgrams(1).peptide.get.ySpectrum().reverse zip (0 to sgrams.head.peptide.get.acids.length).map(_ => 1), 0.1)
-  val s1 = Spectrum.clearNoise(sgrams(1).spectrum)
+  val s1 = Spectrum.normalize(sgrams(1).spectrum)
   val s2ref = pigeonhole(sgrams(2).peptide.get.ySpectrum().reverse zip (0 to sgrams.head.peptide.get.acids.length).map(_ => 1), 0.1)
-  val s2 = Spectrum.clearNoise(sgrams(2).spectrum)
+  val s2 = Spectrum.normalize(sgrams(2).spectrum)
 
   def cosim(sv1: SBV[Double], sv2: SBV[Double]): Double = {
     def euclNorm(v: SBV[Double]): Double = Math.sqrt(v.values.iterator.reduceLeft((acc, v) => acc + Math.pow(v, 2)))
@@ -98,10 +91,10 @@ object Main extends App {
   println(s"s2ref\t= $s2ref")
   println(s"s2\t= $s2")*/
 
-  val l = Spectrum.clearNoise(sgrams(0).spectrum)
+  val l = Spectrum.normalize(sgrams(0).spectrum)
   val map: Map[Double, Int] = (sgrams(0).peptide.get.ySpectrum().reverse zip (0 to sgrams.head.peptide.get.acids.length).map(_ => 1)).toMap
   val sp: Spectrum = Spectrum(map)
-  val r = Spectrum.clearNoise(sp)
+  val r = Spectrum.normalize(sp)
 
   println(f"cosim(s0ref, s0) = ${Spectrum.cosim(l, r)}%1.4f, ${mergeSpectra(sgrams(0).spectrum.peaks.toList.reverse, sgrams(0).peptide.get.ySpectrum(), 1.01)}")
   /*println(f"cosim(s0, s0ref) = ${cosim(s0, s0ref)}%1.4f, ${mergeSpectra(sgrams(0).spectrum.peaks.reverse, sgrams(0).peptide.get.ySpectrum(), 1.01)}")
