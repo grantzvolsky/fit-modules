@@ -1,7 +1,5 @@
 package knapsack.solvers
 
-import knapsack.Configuration
-
 import scala.collection.mutable
 
 object VWRatioHeuristic extends KnapsackSolver {

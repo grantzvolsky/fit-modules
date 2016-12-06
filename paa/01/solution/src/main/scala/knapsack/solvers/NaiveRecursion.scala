@@ -1,7 +1,5 @@
 package knapsack.solvers
 
-import knapsack.Configuration
-
 import scala.collection.mutable
 
 object NaiveRecursion extends KnapsackSolver {
@@ -11,7 +9,6 @@ object NaiveRecursion extends KnapsackSolver {
     val configIndices: mutable.BitSet = mutable.BitSet.empty
 
     def go(w: Int, v: Int, idx: Int): Unit = {
-      if (w > capacity) return
       if (v > best.value) best = Configuration(w, v, new mutable.BitSet(configIndices.toBitMask))
       if (idx == items.length) return
       go(w, v, idx + 1)

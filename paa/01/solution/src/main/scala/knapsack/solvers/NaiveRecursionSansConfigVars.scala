@@ -1,7 +1,5 @@
 package knapsack.solvers
 
-import knapsack.Configuration
-
 import scala.collection.immutable
 
 object NaiveRecursionSansConfigVars extends KnapsackSolver {
@@ -16,7 +14,6 @@ object NaiveRecursionSansConfigVars extends KnapsackSolver {
     var bestW, bestV = 0
 
     def go(w: Int, v: Int, idx: Int): Unit = {
-      if (w > capacity) return
       if (v > bestV) { bestV = v; bestW = bestW }
       if (idx == items.length) return
       go(w, v, idx + 1)

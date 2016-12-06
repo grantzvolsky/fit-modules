@@ -1,4 +1,4 @@
-package knapsack
+package knapsack.solvers
 
 case class Solution(problemIdStr: String, itemCnt: Int, bestConfig: Configuration) {
   override def toString = {

@@ -1,11 +1,11 @@
-package knapsack
+package knapsack.benchmark
 
 import java.lang.management.{ManagementFactory, ThreadMXBean}
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.{Duration, _}
 
 /**
-  * Source: https://puzzle.ics.hut.fi/ICS-A1120/2015/notes/round-efficiency--measuring.html
+  * Created by troll on 03/12/16.
   */
 package object CpuTime {
   val bean: ThreadMXBean = ManagementFactory.getThreadMXBean
@@ -22,7 +22,10 @@ package object CpuTime {
     val r = f
     val end = getCpuTime
     val t = (end - start) / 1000.0
-    (r, Duration(t, MICROSECONDS))
+    if (t < 1000000) {
+      val avgT = measureCpuTimeRepeated(f)
+      (r, Duration(avgT / 1000.0, MICROSECONDS))
+    } else (r, Duration(t, MICROSECONDS))
   }
 
   /**
@@ -32,5 +35,15 @@ package object CpuTime {
     * Therefore, better accuracy is obtained for very small run-times.
     * The function f should be side-effect free!
     */
-  def measureCpuTimeRepeated[T](f: => T): (T, Double) = ??? // TODO, original implementation wasn't suitable
+  def measureCpuTimeRepeated[T](f: => T): Double = {
+    var runs = -2
+    var start, end = 0L
+    while (end - start < 70000000L) {
+      if (runs == 0) start = getCpuTime
+      f
+      if (runs >= 0) end = getCpuTime
+      runs += 1
+    }
+    (end - start) / runs
+  }
 }
