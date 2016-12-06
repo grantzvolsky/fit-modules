@@ -2,8 +2,12 @@ package peptidentifier
 
 import breeze.linalg.{SparseVector => SBV}
 
-case class Spectrum(peaks: Map[Double, Int])
+@deprecated("Use breezeImpl/Spectrum instead")
+case class Spectrum(peaks: Map[Double, Int]) {
+  def normalize = Spectrum.normalize(this)
+}
 
+@deprecated("Use breezeImpl/NormalizedSpectrum instead")
 case class NormalizedSpectrum(peaks: Map[Int, Double])
 
 case object Spectrum {
@@ -40,4 +44,5 @@ case object Spectrum {
     euclDot(l.peaks.values, r.peaks.values) / (euclNorm(l.peaks.values) * euclNorm(r.peaks.values))
   }
 
+  def fromPeaks(peaks: List[Double]) = Spectrum(peaks zip Stream.continually(1) toMap)
 }

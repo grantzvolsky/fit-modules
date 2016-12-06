@@ -9,6 +9,8 @@ case class Spectrum(peaks: Map[Double, Int])
 case class NormalizedSpectrum(peaks: Map[Int, Double])
 
 case object Spectrum {
+  def mass() = ??? // TODO
+
   def discretize(peaks: Map[Double, Int], magnification: Double, bucketCnt: Int): SBV[Double] = {
     val res: SBV[Double] = SBV.zeros[Double](bucketCnt)
 
