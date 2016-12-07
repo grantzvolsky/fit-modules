@@ -1,6 +1,6 @@
 package knapsack.benchmark
 
-import knapsack.solvers.{KnapsackSolver, Solution}
+import knapsack.solvers._
 
 import scala.concurrent.duration.Duration
 
@@ -29,6 +29,15 @@ object Benchmark {
     testScope.map { n =>
       runSingleBatch(solver, in, ref, n)
     } sortBy(b => b.n)
+  }
+
+  def multiAlgorithmBenchmark(format: BenchResult => String, in: Array[String], ref: Array[Solution], itemCnt: Int): List[String] = {
+    List(
+      format(Benchmark.runSingleBatch(NaiveRecursionSansConfigVars, in, ref, itemCnt)),
+      format(Benchmark.runSingleBatch(BranchAndBound, in, ref, itemCnt)),
+      format(Benchmark.runSingleBatch(DPByCapacity, in, ref, itemCnt)),
+      format(Benchmark.runSingleBatch(VWRatioHeuristic, in, ref, itemCnt))
+    )
   }
 
   def formatResults(r: List[BenchResult]): String = {

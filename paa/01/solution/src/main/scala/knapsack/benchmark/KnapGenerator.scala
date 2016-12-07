@@ -21,8 +21,9 @@ case class KnapGenerator(n: Int, N: Int, m: Double, W: Int, C: Int, k: Double, d
   def variableItemsPerInst = (n: Int) => instanceBatchGenerator(itemsPerInst = n)
   def variableMaxW = (W: Int) => instanceBatchGenerator(maxItmW = W)
   def variableMaxV = (C: Int) => instanceBatchGenerator(maxItmV = C)
-  def variableCapacityPerItmWSum = (m: Int) => instanceBatchGenerator(capacityPerItmWSum = m)
-  def variableGranularity = (d: Int) => instanceBatchGenerator(wDistributionMode = d)
+  def variableCapacityPerItmWSum = (m: Double) => instanceBatchGenerator(capacityPerItmWSum = m)
+  def variableWDistribution = (d: Int) => (k: Double) => instanceBatchGenerator(wDistribution = k, wDistributionMode = d)
+  //def variableWDistribution = (k: Double) => instanceBatchGenerator(wDistribution = k)
 
   def apply() = instanceBatchGenerator()
 }
