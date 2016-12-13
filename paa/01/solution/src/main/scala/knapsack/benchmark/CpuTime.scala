@@ -22,7 +22,7 @@ package object CpuTime {
     val r = f
     val end = getCpuTime
     val t = (end - start) / 1000.0
-    if (t < 1000000) {
+    if (t < 1000000 && false) {
       val avgT = measureCpuTimeRepeated(f)
       (r, Duration(avgT / 1000.0, MICROSECONDS))
     } else (r, Duration(t, MICROSECONDS))

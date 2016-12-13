@@ -1,6 +1,7 @@
 package knapsack
 
-import knapsack.benchmark.Benchmark
+import knapsack.benchmark.{Benchmark, KnapGenerator}
+import knapsack.benchmark.Benchmark.BenchResult
 import knapsack.solvers._
 
 import scala.annotation.tailrec
@@ -21,13 +22,11 @@ object Main extends App {
       case "DPByCapacity" => DPByCapacity
       case "DPByValue" => DPByValue
       case "FPTAS" => FPTAS
+      case "Evolution" => Evolution
       //case default => NaiveRecursion
     }
   }
 
-  /**
-    * Parse reference output and return an iterator of [[Solution]]
-    */
   def runBenchmark() = {
     def getReference(refLines: Array[String]): Array[Solution] = {
       val solutionRegex = raw"^(\d+) (\d+) (\d+)(.*)".r
@@ -50,11 +49,28 @@ object Main extends App {
     println(res)
   }
 
+  def runRandomBenchmark() = {
+    val itemCnt = System.getProperty("itemCnt").toInt
+    val batchSize = System.getProperty("batchSize").toInt
+    val capacityPerItmWSum = 0.25
+    val maxW = System.getProperty("maxW").toInt
+    val maxV = System.getProperty("maxV").toInt
+    val wDistribution = 1.0
+    val wDistributionMode = 0
+    val generator = KnapGenerator(itemCnt, batchSize, capacityPerItmWSum, maxW, maxV, wDistribution, wDistributionMode)
+
+    val problems: Array[String] = generator()
+    val referenceSolutions = DPByCapacity.solveAll(problems)
+    def outputFormat = (r: BenchResult) => s"$itemCnt,${r.method},${r.time.toMicros},${"%1.20f".format(r.maxRelErr)},${"%1.20f".format(r.avgRelErr)}"
+    val res = Benchmark.runSingleBatch(solver, problems, referenceSolutions, itemCnt)
+    println(res)
+  }
+
   def run(instances: Array[String]) = {
     solver.solveAll(instances) foreach println
   }
 
   if (System.getProperty("mode") == "print") run(io.Source.stdin.getLines().toArray)
-  else if (System.getProperty("mode") == "benchmark") runBenchmark()
+  else if (System.getProperty("mode") == "benchmark") runRandomBenchmark()
   else println("Unknown mode.")
 }

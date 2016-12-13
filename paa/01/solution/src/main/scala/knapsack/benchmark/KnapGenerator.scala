@@ -15,15 +15,18 @@ case class KnapGenerator(n: Int, N: Int, m: Double, W: Int, C: Int, k: Double, d
     val instances: String = s"""$knapgenPath -n $itemsPerInst -N $instCnt -m $capacityPerItmWSum""" +
       s""" -W $maxItmW -C $maxItmV -k $wDistribution -d $wDistributionMode""" !!
 
+    println(s"""$knapgenPath -n $itemsPerInst -N $instCnt -m $capacityPerItmWSum""" +
+      s""" -W $maxItmW -C $maxItmV -k $wDistribution -d $wDistributionMode""")
+
     instances.split('\n')
   }
 
+  def const = (ignored: Int) => instanceBatchGenerator()
   def variableItemsPerInst = (n: Int) => instanceBatchGenerator(itemsPerInst = n)
   def variableMaxW = (W: Int) => instanceBatchGenerator(maxItmW = W)
   def variableMaxV = (C: Int) => instanceBatchGenerator(maxItmV = C)
   def variableCapacityPerItmWSum = (m: Double) => instanceBatchGenerator(capacityPerItmWSum = m)
   def variableWDistribution = (d: Int) => (k: Double) => instanceBatchGenerator(wDistribution = k, wDistributionMode = d)
-  //def variableWDistribution = (k: Double) => instanceBatchGenerator(wDistribution = k)
 
   def apply() = instanceBatchGenerator()
 }
