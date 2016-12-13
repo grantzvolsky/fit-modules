@@ -1,4 +1,4 @@
-package knapsack
+package knapsack.solvers
 
 import scala.collection.BitSet
 

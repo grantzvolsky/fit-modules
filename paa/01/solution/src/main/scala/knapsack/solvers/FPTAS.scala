@@ -1,7 +1,5 @@
 package knapsack.solvers
 
-import knapsack.Configuration
-
 object FPTAS extends KnapsackSolver {
 
   override def solve(items: Array[(Int, Int)], capacity: Int): Configuration = {
