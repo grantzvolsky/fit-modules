@@ -13,8 +13,13 @@ case class Peptide(acids: List[AminoAcid]) {
 
   def bPeaks(): List[Double] = peptideToSpectrum(this.acids, 1.00794) // TODO: Jak by se tyto konstanty mely jmenovat?
   def yPeaks(): List[Double] = peptideToSpectrum(this.acids.reverse, 19.02322) // TODO: Proc se y ionty pocitaji odzadu? To je konvence?
+  def mass: Double = acids.map(_.mono).sum + (2 * 19.0232)
 
   override def toString = {
+    acids.mkString("")
+  }
+
+  def print = {
     val sb = new StringBuilder
     sb.append("seq\tB\tY\n")
 

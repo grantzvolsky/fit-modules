@@ -26,7 +26,7 @@ case object Spectrum {
     val res = discretize(s.peaks, 1, 100000)
 
     val maxIntensity: Double = res.reduceLeft(_ max _)
-    if (Math.abs(maxIntensity) < 1.0001) { // is not normalised
+    if (Math.abs(maxIntensity) > 1.0001) { // is not normalised
       res.activeKeysIterator foreach (idx => res(idx) = res(idx) / maxIntensity)
     }
 
@@ -34,6 +34,7 @@ case object Spectrum {
   }
 
   def cosim(l: NormalizedSpectrum, r: NormalizedSpectrum): Double = {
+    if (l.peaks.size < 1 || r.peaks.size < 1) return 0
     def euclNorm(v: Iterable[Double]): Double = Math.sqrt(v.reduceLeft((acc, v) => acc + Math.pow(v, 2)))
     def euclDot(l: Iterable[Double], r: Iterable[Double]): Double = {
       val lIt = l.iterator

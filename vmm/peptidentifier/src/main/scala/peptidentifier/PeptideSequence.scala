@@ -11,7 +11,7 @@ case class PeptideSequence(description: String, data: String) {
     * 1) vyčít indexy odstraňovaných interinů
     * 2) Vyčíslit všechny podmnožiny
     */
-  def splice(): List[String] = {
+  def splice(): List[Peptide] = {
     val separatorIds: ListBuffer[Int] = ListBuffer(-1) // -1 will be treated as the first separator
     for (i <- 0 until data.length) {
       if (data(i) == 'K' || ((i+1 != data.length) && data(i) == 'R' && data(i+1) != 'P')) {
@@ -24,20 +24,22 @@ case class PeptideSequence(description: String, data: String) {
     for (i <- separatorIds.indices) {
 
       separatorIds.length - 1 match {
-        case last if i+1 == last => peptides.append(data.substring(separatorIds(i)+1, separatorIds(i+1)))
+        case last if i+1 == last => peptides.append(data.substring(separatorIds(i)+1, separatorIds(i+1)+1))
         case last if i+2 <= last =>
-          peptides.append(data.substring(separatorIds(i)+1, separatorIds(i+1)))
-          peptides.append(data.substring(separatorIds(i)+1, separatorIds(i+2)))
+          peptides.append(data.substring(separatorIds(i)+1, separatorIds(i+1)+1))
+          peptides.append(data.substring(separatorIds(i)+1, separatorIds(i+2)+1))
         case default =>
       }
     }
 
-    peptides ++= List( // We can't add data.length as the last separator because separatorIds(i+1) would fail. Instead we do the last bits manually.
-      data.substring(separatorIds(separatorIds.length - 2)+1, data.length),
-      data.substring(separatorIds.last+1, data.length)
-    )
+    if (separatorIds.length >= 2 && separatorIds(separatorIds.length - 2)+1 < data.length) {
+      peptides ++= List(// We can't add data.length as the last separator because separatorIds(i+1) would fail. Instead we do the last bits manually.
+        data.substring(separatorIds(separatorIds.length - 2) + 1, data.length),
+        data.substring(separatorIds.last + 1, data.length)
+      )
+    }
 
-    peptides.toList
+    peptides map Peptide.fromString toList
   }
 }
 

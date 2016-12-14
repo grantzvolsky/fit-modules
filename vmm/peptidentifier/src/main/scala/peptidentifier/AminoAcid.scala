@@ -5,7 +5,9 @@ import scala.collection.immutable
 case class AminoAcid(name: String,
                      code: Char,
                      mono: Double, // monoisotopic mass
-                     avg: Double /* isotopic average mass*/ )
+                     avg: Double /* isotopic average mass*/ ) {
+  override def toString = code.toString
+}
 
 case object AminoAcid {
   def fromString(str: String): Option[AminoAcid] = {

@@ -1,6 +1,7 @@
 package peptidentifier
 
 import breeze.linalg.{SparseVector => SBV}
+import scala.collection.breakOut
 
 import scala.collection.mutable
 
@@ -13,6 +14,10 @@ case class Spectrogram(peptide: Option[Peptide],
 case object Spectrogram {
   val varPattern = raw"(.*)=(.*)".r
   val peakPattern = raw"(\d*\.?\d+) (\d+)".r
+
+  def fromMgfIndexed(it: Iterator[String]): Map[String, Spectrogram] = {
+    fromMgf(it).map(p => (p.peptide.get.toString, p))(breakOut)
+  }
 
   def fromMgf(it: Iterator[String]): List[Spectrogram] = {
     var sgrams: List[Spectrogram] = Nil
