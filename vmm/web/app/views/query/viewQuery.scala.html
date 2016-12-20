@@ -1,0 +1,13 @@
+@import peptidentifier.Spectrogram
+@(queries: Map[String, Spectrogram])(implicit request: RequestHeader, messages: Messages)
+
+@main("Welcome to Play") {
+    Spectra
+    <ul>
+    @queries.iterator.map { q =>
+        <li>
+            @q._1 &nbsp; <a href="#">identify</a>
+        </li>
+    }
+    </ul>
+}

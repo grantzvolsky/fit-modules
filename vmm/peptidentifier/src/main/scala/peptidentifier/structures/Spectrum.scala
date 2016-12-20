@@ -1,6 +1,6 @@
 package peptidentifier
 
-import breeze.linalg.{SparseVector => SBV}
+import breeze.linalg.{VectorBuilder, SparseVector => SBV}
 
 @deprecated("Use breezeImpl/Spectrum instead")
 case class Spectrum(peaks: Map[Double, Int]) {
@@ -8,32 +8,35 @@ case class Spectrum(peaks: Map[Double, Int]) {
 }
 
 @deprecated("Use breezeImpl/NormalizedSpectrum instead")
-case class NormalizedSpectrum(peaks: Map[Int, Double])
+case class NormalizedSpectrum(peaks: SBV[Double])
 
 case object Spectrum {
-  def discretize(peaks: Map[Double, Int], magnification: Double, bucketCnt: Int): SBV[Double] = {
-    val res: SBV[Double] = SBV.zeros[Double](bucketCnt)
+  val discreteAmplifier = 1
+  val discreteBuckets = 5000 * discreteAmplifier
+
+  def discretize(peaks: Map[Double, Int]): SBV[Double] = {
+    val vb: VectorBuilder[Double] = new VectorBuilder(length = discreteBuckets)
 
     peaks foreach {case (mz, intensity) =>
-      val pigeonHoldIdx = (mz * magnification).toInt
-      res(pigeonHoldIdx) = res(pigeonHoldIdx) + intensity.toDouble
+      val pigeonHoleIdx = (mz * discreteAmplifier).toInt
+      vb.add(pigeonHoleIdx, vb(pigeonHoleIdx) + intensity.toDouble)
     }
 
-    res
+    vb.toSparseVector
   }
 
   def normalize(s: Spectrum): NormalizedSpectrum = {
-    val res = discretize(s.peaks, 1, 100000)
+    val res = discretize(s.peaks)
 
     val maxIntensity: Double = res.reduceLeft(_ max _)
     if (Math.abs(maxIntensity) > 1.0001) { // is not normalised
       res.activeKeysIterator foreach (idx => res(idx) = res(idx) / maxIntensity)
     }
 
-    NormalizedSpectrum(res.activeIterator.toMap)
+    NormalizedSpectrum(res)
   }
 
-  def cosim(l: NormalizedSpectrum, r: NormalizedSpectrum): Double = {
+  /*def cosim(l: NormalizedSpectrum, r: NormalizedSpectrum): Double = {
     if (l.peaks.size < 1 || r.peaks.size < 1) return 0
     def euclNorm(v: Iterable[Double]): Double = Math.sqrt(v.reduceLeft((acc, v) => acc + Math.pow(v, 2)))
     def euclDot(l: Iterable[Double], r: Iterable[Double]): Double = {
@@ -43,7 +46,7 @@ case object Spectrum {
     }
 
     euclDot(l.peaks.values, r.peaks.values) / (euclNorm(l.peaks.values) * euclNorm(r.peaks.values))
-  }
+  }*/
 
   def fromPeaks(peaks: List[Double]) = Spectrum(peaks zip Stream.continually(1) toMap)
 }
