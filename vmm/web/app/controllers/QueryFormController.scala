@@ -4,11 +4,13 @@ import javax.inject._
 
 import akka.actor.ActorSystem
 import forms.QueryForm
+import peptidentifier.Spectrogram
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.cache._
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.io.Source
 
 @Singleton
 class QueryFormController @Inject()(cache: CacheApi, actorSystem: ActorSystem)(
@@ -24,9 +26,13 @@ class QueryFormController @Inject()(cache: CacheApi, actorSystem: ActorSystem)(
     QueryForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.query.form.view(form))),
       data => {
-        val id = java.util.UUID.randomUUID().toString
-        cache.set(id, data.queries)
-        Future.successful(Redirect(routes.QueryBrowserController.view(id)).flashing("info" -> Messages(s"Your query ID is $id")))
+        Spectrogram.fromMgf(Source.fromString(data.queries).getLines).zipWithIndex.map(_.swap).toMap match {
+          case queries if queries.isEmpty => Future.successful(NotFound("Invalid or empty input."))
+          case queries =>
+            val id = java.util.UUID.randomUUID().toString
+            cache.set(id, queries)
+            Future.successful(Redirect(routes.QueryBrowserController.view(id)).flashing("info" -> Messages(s"Your query ID is $id")))
+        }
       }
     )
   }

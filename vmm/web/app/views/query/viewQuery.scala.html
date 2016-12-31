@@ -1,13 +1,14 @@
 @import peptidentifier.Spectrogram
-@(queries: Map[String, Spectrogram])(implicit request: RequestHeader, messages: Messages)
+@(batchId: String, queries: Map[Int, Spectrogram])(implicit request: RequestHeader, messages: Messages)
 
 @main("Welcome to Play") {
-    Spectra
-    <ul>
-    @queries.iterator.map { q =>
-        <li>
-            @q._1 &nbsp; <a href="#">identify</a>
-        </li>
-    }
-    </ul>
+    <div id="leftColumn">
+        <div id="spectraMenu" data-batchid="@batchId"></div>
+    </div>
+    <div id="rightColumn">
+        <div id="spectraDetail"></div>
+        <div id="gchart" style="width: 800px; height: 600px;"></div>
+    </div>
+
+    <script>client.Modules().load()</script>
 }

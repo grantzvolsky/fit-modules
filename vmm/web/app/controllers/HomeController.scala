@@ -1,8 +1,11 @@
 package controllers
 
 import javax.inject._
+
 import play.api._
 import play.api.mvc._
+
+import scala.concurrent.Future
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -17,8 +20,8 @@ class HomeController @Inject() extends Controller {
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  def index = Action.async { implicit request =>
+    Future.successful(Ok(views.html.index("Your new application is ready.")))
   }
 
 }
