@@ -30,6 +30,10 @@ class QueryFormController @Inject()(cache: CacheApi, actorSystem: ActorSystem)(
           case queries if queries.isEmpty => Future.successful(NotFound("Invalid or empty input."))
           case queries =>
             val id = java.util.UUID.randomUUID().toString
+            cache.get[List[String]]("_mgfIds") match {
+              case Some(mgfList) => cache.set("_mgfIds", id :: mgfList)
+              case None => cache.set("_mgfIds", List(id))
+            }
             cache.set(id, queries)
             Future.successful(Redirect(routes.QueryBrowserController.view(id)).flashing("info" -> Messages(s"Your query ID is $id")))
         }

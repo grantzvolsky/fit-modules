@@ -23,41 +23,30 @@ class QueryBrowserController @Inject()(cache: CacheApi, actorSystem: ActorSystem
     }
   }
 
-  def getJson(batchId: String) = Action.async { implicit request =>
-    val batch: Map[Int, Spectrogram] = cache.get[Map[Int, Spectrogram]](batchId).get
-
-    /*implicit object AminoAcidWrites extends Writes[List[AminoAcid]] {
-      def writes(o: List[AminoAcid]) = JsString(o.map(_.code).mkString(""))
+  def getAll() = Action.async { implicit request =>
+    cache.get[List[String]]("_mgfIds") match {
+      case Some(mgfIds) => Future.successful(Ok(write(mgfIds)))
+      case None => Future.successful(Ok(write(List[String]())))
     }
-    implicit val PeptideWrites = Json.writes[Peptide]
+  }
 
-    implicit def mapWrites[A, B](implicit a: Writes[A], b: Writes[B]): Writes[Map[A, B]] = new Writes[Map[A, B]] {
-      def writes(o: Map[A, B]): JsValue = JsArray(o.map{ case (k, v) => Json.obj("_1" -> k.toString, "_2" -> b.writes(v)) }.toSeq)   //a.writes(tuple._1), b.writes(tuple._2)))
-    }*/
-
-    //implicit val SpectrumWrites = Json.writes[Spectrum]
-
-    //implicit val SpectrogramWrites = Json.writes[Spectrogram]
-
-
+  def getMgf(batchId: String) = Action.async { implicit request =>
+    val batch: Map[Int, Spectrogram] = cache.get[Map[Int, Spectrogram]](batchId).get
 
     val json = write(batch)
     Future.successful(Ok(json))
   }
 
-  def run(batchId: String, queryId: Int) = Action.async { implicit request =>
+  def run(batchId: String, queryId: Int, spectrumType: String, maxMassDiff: Int, proteinDbPath: String) = Action.async { implicit request =>
     val q = cache.get[Map[Int, Spectrogram]](batchId).get(queryId)
-    val resOpt = FastaDB.query(q, 10).take(10)
-
-    /*implicit object PeptideiteWrites extends Writes[Peptide] {
-      def writes(o: Peptide) = JsString(o.toString)
+    val res: List[(Double, Peptide)] = spectrumType match {
+      case "bSpectrum" => FastaDB.customPeaksQuery(q, maxMassDiff, (p: Peptide) => p.bPeaks()).take(10)
+      case "ySpectrum" => FastaDB.customPeaksQuery(q, maxMassDiff, (p: Peptide) => p.yPeaks()).take(10)
+      case "bySpectrum" => FastaDB.customPeaksQuery(q, maxMassDiff, (p: Peptide) => p.byPeaks()).take(10)
+      case default => FastaDB.customPeaksQuery(q, maxMassDiff, (p: Peptide) => p.yPeaks()).take(10)
     }
+    //val resOpt: List[(Double, Peptide)] = FastaDB.customPeaksQuery(q, maxMassDiff).take(10)
 
-    implicit def tuple2Writes[A, B](implicit a: Writes[A], b: Writes[B]): Writes[Tuple2[A, B]] = new Writes[Tuple2[A, B]] {
-      def writes(tuple: Tuple2[A, B]) = JsArray(Seq(a.writes(tuple._1), b.writes(tuple._2)))
-    }*/
-
-    val json = write(resOpt)
-    Future.successful(Ok(json))
+    Future.successful(Ok(write(res)))
   }
 }

@@ -13,8 +13,10 @@ GET     /message                    @controllers.AsyncController.message
 GET     /assets/*file               @controllers.Assets.versioned(path="/public", file: Asset)
 
 GET     /query/:batchId             @controllers.QueryBrowserController.view(batchId: String)
-GET     /query/:batchId/json        @controllers.QueryBrowserController.getJson(batchId: String)
-GET     /query/:batchId/:queryId    @controllers.QueryBrowserController.run(batchId: String, queryId: Int)
+GET     /query/:batchId/json        @controllers.QueryBrowserController.getMgf(batchId: String)
+GET     /query/:batchId/:queryId/:spectrumType/:maxMassDiff/:proteinDbPath    @controllers.QueryBrowserController.run(batchId: String, queryId: Int, spectrumType: String, maxMassDiff: Int, proteinDbPath: String)
 
 GET     /submit-queries             @controllers.QueryFormController.view
 POST    /submit-queries             @controllers.QueryFormController.submit
+
+GET     /mgf/all                    @controllers.QueryBrowserController.getAll()

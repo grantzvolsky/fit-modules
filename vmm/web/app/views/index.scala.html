@@ -5,6 +5,7 @@
 @(message: String)(implicit request: RequestHeader)
 
 @main("Welcome to Play") {
-
-    <div id="content"></div>
+    <p><a href="@routes.QueryFormController.view()">Upload spectra (mgf)</a></p>
+    <div id="sjsContainer"></div>
+    <script>client.Modules().mgfListPage()</script>
 }
