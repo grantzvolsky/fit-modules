@@ -8,7 +8,7 @@ case class PeptideSequence(description: String, data: String) {
     * Vlastně se jedná o obrácený problém batohu. Předměty, které dáváme do batohu, jsou aminokyseliny, podle kterých
     * sekvenci rozdělujeme. Potřebujeme vyčíst všechny možnosti, jak 2...
     * Řešení:
-    * 1) vyčít indexy odstraňovaných interinů
+    * 1) vyčít indexy odstraňovaných inteinů
     * 2) Vyčíslit všechny podmnožiny
     */
   def splice(): List[Peptide] = {
