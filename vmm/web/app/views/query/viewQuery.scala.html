@@ -1,0 +1,17 @@
+@import peptidentifier.Spectrogram
+@(batchId: String, queries: Map[Int, Spectrogram])(implicit request: RequestHeader, messages: Messages)
+
+@main("Welcome to Play") {
+    <div id="leftColumn">
+        <div id="spectraMenu" data-batchid="@batchId"></div>
+    </div>
+    <div id="rightColumn">
+        <div id="spectraDetail"></div>
+    </div>
+    <div>
+        <div id="gchart" style="width: 1800px; height: 600px; float: left;"></div>
+    </div>
+
+
+    <script>client.Modules().mgfDetailPage()</script>
+}

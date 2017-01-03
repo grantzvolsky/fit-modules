@@ -1,0 +1,42 @@
+2017-01-02 17:43:21,429 [INFO] from application in ForkJoinPool-1-worker-1 - ApplicationTimer demo: Starting application at 2017-01-02T16:43:21.423Z.
+2017-01-02 17:43:21,541 [INFO] from play.api.Play in ForkJoinPool-1-worker-1 - Application started (Dev)
+2017-01-02 17:44:41,207 [ERROR] from application in netty-event-loop-5 - 
+
+! @72hmkhhk2 - Internal server error, for (GET) [/query/fbc1749d-66ad-4137-ba58-06780d358156] ->
+ 
+play.sbt.PlayExceptions$CompilationException: Compilation error[value := is not a member of Int]
+	at play.sbt.PlayExceptions$CompilationException$.apply(PlayExceptions.scala:27)
+	at play.sbt.PlayExceptions$CompilationException$.apply(PlayExceptions.scala:27)
+	at scala.Option.map(Option.scala:145)
+	at play.sbt.run.PlayReload$$anonfun$taskFailureHandler$1.apply(PlayReload.scala:49)
+	at play.sbt.run.PlayReload$$anonfun$taskFailureHandler$1.apply(PlayReload.scala:44)
+	at scala.Option.map(Option.scala:145)
+	at play.sbt.run.PlayReload$.taskFailureHandler(PlayReload.scala:44)
+	at play.sbt.run.PlayReload$.compileFailure(PlayReload.scala:40)
+	at play.sbt.run.PlayReload$$anonfun$compile$1.apply(PlayReload.scala:17)
+	at play.sbt.run.PlayReload$$anonfun$compile$1.apply(PlayReload.scala:17)
+	at scala.util.Either$LeftProjection.map(Either.scala:377)
+	at play.sbt.run.PlayReload$.compile(PlayReload.scala:17)
+	at play.sbt.run.PlayRun$$anonfun$playRunTask$1$$anonfun$apply$2$$anonfun$apply$3$$anonfun$2.apply(PlayRun.scala:61)
+	at play.sbt.run.PlayRun$$anonfun$playRunTask$1$$anonfun$apply$2$$anonfun$apply$3$$anonfun$2.apply(PlayRun.scala:61)
+	at play.runsupport.Reloader$$anonfun$reload$1.apply(Reloader.scala:339)
+	at play.runsupport.Reloader$$anon$3.run(Reloader.scala:44)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at play.runsupport.Reloader$.play$runsupport$Reloader$$withReloaderContextClassLoader(Reloader.scala:40)
+	at play.runsupport.Reloader.reload(Reloader.scala:337)
+	at play.core.server.DevServerStart$$anonfun$mainDev$1$$anon$1$$anonfun$get$1.apply(DevServerStart.scala:123)
+	at play.core.server.DevServerStart$$anonfun$mainDev$1$$anon$1$$anonfun$get$1.apply(DevServerStart.scala:121)
+	at scala.concurrent.impl.Future$PromiseCompletingRunnable.liftedTree1$1(Future.scala:24)
+	at scala.concurrent.impl.Future$PromiseCompletingRunnable.run(Future.scala:24)
+	at akka.dispatch.TaskInvocation.run(AbstractDispatcher.scala:39)
+	at akka.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(AbstractDispatcher.scala:415)
+	at scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+2017-01-02 17:45:35,479 [INFO] from application in application-akka.actor.default-dispatcher-14 - ApplicationTimer demo: Stopping application at 2017-01-02T16:45:35.479Z after 134s.
+2017-01-02 17:45:35,582 [INFO] from application in application-akka.actor.default-dispatcher-14 - ApplicationTimer demo: Starting application at 2017-01-02T16:45:35.581Z.
+2017-01-02 17:45:35,656 [INFO] from play.api.Play in application-akka.actor.default-dispatcher-14 - Application started (Dev)
+2017-01-02 17:53:18,461 [INFO] from application in application-akka.actor.default-dispatcher-5 - ApplicationTimer demo: Stopping application at 2017-01-02T16:53:18.461Z after 463s.
+2017-01-02 17:53:18,532 [INFO] from application in application-akka.actor.default-dispatcher-5 - ApplicationTimer demo: Starting application at 2017-01-02T16:53:18.531Z.
+2017-01-02 17:53:18,673 [INFO] from play.api.Play in application-akka.actor.default-dispatcher-5 - Application started (Dev)

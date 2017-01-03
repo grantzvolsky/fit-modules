@@ -1,0 +1,9 @@
+@(queryForm: Form[forms.QueryForm.Data])(implicit request: RequestHeader, messages: Messages)
+
+@main("Welcome to Play") {
+    Enter your queries to the text box below.
+    @helper.form(action = routes.QueryFormController.submit) {
+        @helper.textarea(queryForm("queries"), 'rows -> 10, 'cols -> 150)
+        <button type="submit">Submit</button>
+    }
+}
